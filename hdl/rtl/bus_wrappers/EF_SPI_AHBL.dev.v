@@ -256,5 +256,6 @@ module EF_SPI_AHBL #(
 
 	assign	RXDATA_WIRE = datao;
 	assign	rd = (ahbl_re & (last_HADDR[`AHBL_AW-1:0] == RXDATA_REG_OFFSET));
+	assign	datai = HWDATA;
 	assign	wr = (ahbl_we & (last_HADDR[`AHBL_AW-1:0] == TXDATA_REG_OFFSET));
 endmodule
