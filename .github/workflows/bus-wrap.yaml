@@ -127,6 +127,9 @@ jobs:
           git -C ${{ env.IP_PATH }} status
       - name: Create PR
         if: ${{ steps.check_diff.outputs.changed == 'true' }} 
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           branch="ci-${{steps.vars.outputs.buswrap_head_commit}}-${{steps.vars.outputs.ip_branch_name}}"
           echo "there are changes pushing to $branch"
@@ -140,10 +143,10 @@ jobs:
           title='ci: run bus_wrap on ${{steps.vars.outputs.ip_branch_name}}'
           pr="$(gh pr list --search '$title' --state open)"
           if [[ -n "${PR_URL}" ]]; then
-            echo "PR already exists -> ${PR_URL}"
+            echo "PR '$title' already exists"
             exit 0
           else
-            GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} gh pr create \
+            gh pr create \
               -B ${{steps.vars.outputs.ip_branch_name}}\
               -H $branch\
               --title $title\
