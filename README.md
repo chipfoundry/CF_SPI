@@ -269,6 +269,7 @@ You can install the IP either by cloning this repository or by using [IPM](https
 |rx_flush|input|1|Flush the RX FIFO.|
 |rx_threshold|input|FAW|RX FIFO level threshold.|
 |rx_empty|output|1|RX FIFO is empty.|
+|rx_full|output|1|RX FIFO is full.|
 |rx_level_above|output|1|RX FIFO level is above the threshold.|
 |rx_level|output|FAW|RX FIFO data level.|
 |tx_flush|input|1|Flush the TX FIFO.|
