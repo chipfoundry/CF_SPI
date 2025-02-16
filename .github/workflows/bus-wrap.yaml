@@ -142,8 +142,8 @@ jobs:
           git commit -m "run bus_wrap(${{steps.vars.outputs.buswrap_head_commit}}) on ${{ steps.vars.outputs.ip_head_commit }}"
           git push -f --set-upstream origin $branch
           title="ci: run bus_wrap on ${{steps.vars.outputs.ip_branch_name}}"
-          pr="$(gh pr list --search $title --state open)"
-          if [[ -n "${PR_URL}" ]]; then
+          pr="$(gh pr list --search \"${title}\" --state open)"
+          if [[ -n "${pr}" ]]; then
             echo "PR '$title' already exists"
             exit 0
           else
