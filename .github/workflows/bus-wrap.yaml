@@ -137,7 +137,18 @@ jobs:
           git add .
           git commit -m "run bus_wrap(${{steps.vars.outputs.buswrap_head_commit}}) on ${{ steps.vars.outputs.ip_head_commit }}"
           git push -f --set-upstream origin $branch
-          GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} gh pr create -B ${{steps.vars.outputs.ip_branch_name}} -H $branch --title 'ci: run bus_wrap on ${{steps.vars.outputs.ip_branch_name}}' --body 'Created by CI Github action'
+          title='ci: run bus_wrap on ${{steps.vars.outputs.ip_branch_name}}'
+          pr="$(gh pr list --search '$title' --state open)"
+          if [[ -n "${PR_URL}" ]]; then
+            echo "PR already exists -> ${PR_URL}"
+            exit 0
+          else
+            GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} gh pr create \
+              -B ${{steps.vars.outputs.ip_branch_name}}\
+              -H $branch\
+              --title $title\
+              --body 'Created by CI Github action'
+          fi
       - name: Not Push to branch
         if: ${{ steps.check_diff.outputs.changed == 'false' }} 
         run: |
