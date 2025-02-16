@@ -131,6 +131,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          set -x
           branch="ci-${{steps.vars.outputs.buswrap_head_commit}}-${{steps.vars.outputs.ip_branch_name}}"
           echo "there are changes pushing to $branch"
           cd ${{ env.IP_PATH }}
@@ -141,7 +142,7 @@ jobs:
           git commit -m "run bus_wrap(${{steps.vars.outputs.buswrap_head_commit}}) on ${{ steps.vars.outputs.ip_head_commit }}"
           git push -f --set-upstream origin $branch
           title='ci: run bus_wrap on ${{steps.vars.outputs.ip_branch_name}}'
-          pr="$(gh pr list --search '$title' --state open)"
+          pr="$(gh pr list --search \"$title\" --state open)"
           if [[ -n "${PR_URL}" ]]; then
             echo "PR '$title' already exists"
             exit 0
