@@ -175,7 +175,7 @@ jobs:
           exit 0
         else
           gh pr create \
-            -B "${{steps.vars.outputs.ip_branch_name}}"\
+            -B "${{inputs.pr_base}}"\
             -H "$branch"\
             --title "$title"\
             --body "Created by CI Github action"
