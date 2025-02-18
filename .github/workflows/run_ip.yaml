@@ -157,17 +157,21 @@ jobs:
         ip_name=${{ inputs.name }}
         ip_head_commit=${{steps.vars.outputs.ip_head_commit}}
         buswrap_head_commit=${{steps.vars.outputs.buswrap_head_commit}}
+        ip_branch=${{inputs.pr_base}}
         branch="${{inputs.pr_branch}}"
         branch="${branch/IP_COMMIT/"$ip_head_commit"}"
         branch="${branch/BUSWRAP_COMMIT/"$buswrap_head_commit"}"
+        branch="${branch/IP_BRANCH/"$ip_branch"}"
         title="${{inputs.pr_title}}"
         title="${title/IP_COMMIT/"$ip_head_commit"}"
         title="${title/BUSWRAP_COMMIT/"$buswrap_head_commit"}"
         title="${title/IP_NAME/"$ip_name"}"
+        title="${title/IP_BRANCH/"$ip_branch"}"
         msg="${{inputs.commit_msg}}"
         msg="${msg/IP_COMMIT/"$ip_head_commit"}"
         msg="${msg/BUSWRAP_COMMIT/"$buswrap_head_commit"}"
         msg="${msg/IP_NAME/"$ip_name"}"
+        msg="${msg/IP_BRANCH/"$ip_branch"}"
         echo "there are changes pushing to $branch"
         cd ${{ env.IP_PATH }}
         git config --local user.name "github-actions[bot]"
