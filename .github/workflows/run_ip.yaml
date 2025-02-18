@@ -59,6 +59,7 @@ jobs:
       name: Checkout ${{ inputs.ip_repo }}
       with:
         path: ${{ env.IP_PATH }}
+        ref: ${{ inputs.pr_base }}
     - name: Generate Wrapper
       if: ${{ inputs.bus_wrapper == 'true' }}
       run: |
@@ -189,8 +190,7 @@ jobs:
     - name: Not Push to branch
       if: ${{ steps.check_diff.outputs.changed == 'false' }} 
       run: |
-        branch="ci-${{steps.vars.outputs.buswrap_head_commit}}-${{steps.vars.outputs.ip_branch_name}}"
-        echo "there are no changes not pushing to $branch"
+        echo "there are no changes not pushing"
     - name: Check Context
       shell: bash
       if: always()
