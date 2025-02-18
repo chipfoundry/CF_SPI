@@ -107,7 +107,7 @@ jobs:
       run: |
         set -x
         ip_dir=${{ env.IP_PATH }}
-        ip_name=${{ inputs.IP_NAME }}
+        ip_name=${{ inputs.name }}
         bus_wrap_dir=${{ env.BUSWRAP_PATH }}
         rm -rf ${ip_dir}/README.md
         rm -rf ${ip_dir}/verify/README.md
@@ -175,8 +175,8 @@ jobs:
           exit 0
         else
           gh pr create \
-            -B ${{steps.vars.outputs.ip_branch_name}}\
-            -H $branch\
+            -B "${{steps.vars.outputs.ip_branch_name}}"\
+            -H "$branch"\
             --title "$title"\
             --body "Created by CI Github action"
         fi
