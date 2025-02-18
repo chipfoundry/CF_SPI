@@ -120,7 +120,7 @@ jobs:
       run: |
         set -x
         ip_dir=${{ env.IP_PATH }}
-        ip_name=${{ inputs.IP_NAME }}
+        ip_name=${{ inputs.name }}
         bus_wrap_dir=${{ env.BUSWRAP_PATH }}
         rm -rf ${ip_dir}/fw/${ip_name}_regs.h
         git -C ${{ env.IP_PATH }} status
