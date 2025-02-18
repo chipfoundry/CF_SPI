@@ -127,11 +127,7 @@ jobs:
           git -C ${{ env.IP_PATH }} status
       - name: Create PR
         if: ${{ steps.check_diff.outputs.changed == 'true' }} 
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          set -x
           branch="ci-${{steps.vars.outputs.buswrap_head_commit}}-${{steps.vars.outputs.ip_branch_name}}"
           echo "there are changes pushing to $branch"
           cd ${{ env.IP_PATH }}
@@ -141,23 +137,12 @@ jobs:
           git add .
           git commit -m "run bus_wrap(${{steps.vars.outputs.buswrap_head_commit}}) on ${{ steps.vars.outputs.ip_head_commit }}"
           git push -f --set-upstream origin $branch
-          title="ci: run bus_wrap on ${{steps.vars.outputs.ip_branch_name}}"
-          pr=$(gh pr list --search "${title}" --state open)
-          if [[ -n "${pr}" ]]; then
-            echo "PR '$title' already exists"
-            exit 0
-          else
-            gh pr create \
-              -B ${{steps.vars.outputs.ip_branch_name}}\
-              -H $branch\
-              --title "$title"\
-              --body "Created by CI Github action"
-          fi
+          GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} gh pr create -B ${{steps.vars.outputs.ip_branch_name}} -H $branch --title 'ci: run bus_wrap on ${{steps.vars.outputs.ip_branch_name}}' --body 'Created by CI Github action'
       - name: Not Push to branch
         if: ${{ steps.check_diff.outputs.changed == 'false' }} 
         run: |
           branch="ci-${{steps.vars.outputs.buswrap_head_commit}}-${{steps.vars.outputs.ip_branch_name}}"
-          echo "there are no changes not pushing to $branch"
+          echo "there are changes pushing to $branch"
       - name: Check Context
         shell: bash
         if: always()
