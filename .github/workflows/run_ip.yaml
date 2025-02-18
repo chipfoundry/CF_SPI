@@ -62,7 +62,8 @@ jobs:
     - name: Generate Wrapper
       if: ${{ inputs.bus_wrapper == 'true' }}
       run: |
-        set -x
+        set -ex
+        set -o pipefail
         ip_dir=${{ env.IP_PATH }}
         ip_name=${{ inputs.name }}
         bus_wrap_dir=${{ env.BUSWRAP_PATH }}
@@ -105,9 +106,10 @@ jobs:
     - name: Generate Docs
       if: ${{ inputs.docs == 'true' }}
       run: |
-        set -x
+        set -ex
+        set -o pipefail
         ip_dir=${{ env.IP_PATH }}
-        ip_name=${{ inputs.name }}
+        ip_name=garbage
         bus_wrap_dir=${{ env.BUSWRAP_PATH }}
         rm -rf ${ip_dir}/README.md
         rm -rf ${ip_dir}/verify/README.md
@@ -118,7 +120,8 @@ jobs:
     - name: Generate FW
       if: ${{ inputs.fw == 'true' }}
       run: |
-        set -x
+        set -ex
+        set -o pipefail
         ip_dir=${{ env.IP_PATH }}
         ip_name=${{ inputs.name }}
         bus_wrap_dir=${{ env.BUSWRAP_PATH }}
