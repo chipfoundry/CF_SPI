@@ -38,7 +38,7 @@ jobs:
         echo "BUSWRAP_PATH=./bus-wrap" >> $GITHUB_ENV
         echo "BUSWRAP_REPO=efabless/BusWrap" >> $GITHUB_ENV
         echo "BUSWRAP_REF=main" >> $GITHUB_ENV
-        echo "IP_PATH=./${{ inputs.ip_name }}" >> $GITHUB_ENV
+        echo "IP_PATH=./${{ inputs.name }}" >> $GITHUB_ENV
     - name: Install iverilog
       run: |
         sudo apt-get update -qq
@@ -64,7 +64,7 @@ jobs:
       run: |
         set -x
         ip_dir=${{ env.IP_PATH }}
-        ip_name=${{ inputs.ip_name }}
+        ip_name=${{ inputs.name }}
         bus_wrap_dir=${{ env.BUSWRAP_PATH }}
         rm -rf ${ip_dir}/hdl/rtl/bus_wrappers
         git -C ${{ env.IP_PATH }} status
