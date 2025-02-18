@@ -17,7 +17,7 @@ jobs:
       docs: true
       bus_wrapper: true
       pr_base: ${{ github.head_ref || github.ref_name }}
-      pr_branch: "ci-ip:BUSWRAP_COMMIT"
+      pr_branch: "ci-ip-BUSWRAP_COMMIT"
       #pr_branch: "ci-ip-buswrap:BUSWRAP_COMMIT"
       pr_title: "ci(ip): run bus_wrap BUSWRAP_COMMIT on IP_COMMIT"
       commit_msg: "run bus_wrap(BUSWRAP_COMMIT) on IP_COMMIT"
