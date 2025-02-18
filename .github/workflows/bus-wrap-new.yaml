@@ -12,7 +12,7 @@ jobs:
     secrets: inherit
     with:
       repo: ${{ github.repository }}
-      name: EF_UART
+      name: EF_SPI
       fw: true
       docs: true
       bus_wrapper: true
