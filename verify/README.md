@@ -1,4 +1,4 @@
-## Run cocotb UVM Testbench2:
+## Run cocotb UVM Testbench:
 In IP directory run:
  ```shell
  cd verify/uvm-python/
