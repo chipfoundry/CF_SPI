@@ -8,7 +8,7 @@ permissions:
 
 jobs:
   Run:
-    uses: ./.github/workflows/run_ip.yaml
+    uses: efabless/BusWrap/.github/workflows/run_ip.yaml@test-ci
     secrets: inherit
     with:
       repo: ${{ github.repository }}
@@ -18,6 +18,5 @@ jobs:
       bus_wrapper: true
       pr_base: ${{ github.head_ref || github.ref_name }}
       pr_branch: "ci-ip-IP_BRANCH-BUSWRAP_COMMIT"
-      #pr_branch: "ci-ip-buswrap:BUSWRAP_COMMIT"
       pr_title: "ci[ip]: run bus_wrap(BUSWRAP_COMMIT) on IP_NAME(IP_BRANCH)"
       commit_msg: "run bus_wrap(BUSWRAP_COMMIT) on IP_NAME(IP_COMMIT)"
