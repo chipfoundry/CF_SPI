@@ -1,5 +1,5 @@
 `include "tb_macros.vh"
-module EF_SPI_tb;
+module CF_SPI_tb;
     localparam CDW = 8;
     localparam FAW = 4;
     
@@ -32,7 +32,7 @@ module EF_SPI_tb;
     // Create a loopback
     assign miso = mosi;
 
-    EF_SPI MUV (
+    	CF_SPI MUV (
         .clk(clk),
         .rst_n(rst_n),
         .CPOL(CPOL),
@@ -56,7 +56,7 @@ module EF_SPI_tb;
 
     `TB_CLK(clk, 5)
     `TB_SRSTN(rst_n, clk, 387)
-    `TB_DUMP("EF_SPI_tb.vcd", EF_SPI_tb, 0) 
+    `TB_DUMP("CF_SPI_tb.vcd", CF_SPI_tb, 0) 
     `TB_FINISH(100_000)
 
     initial begin

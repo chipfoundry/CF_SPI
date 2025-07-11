@@ -1,21 +1,20 @@
 /*
-	Copyright 2025 Efabless Corp.
-
-	Author: Efabless Corp. (ip_admin@efabless.com)
-
-	Licensed under the Apache License, Version 2.0 (the "License");
-	you may not use this file except in compliance with the License.
-	You may obtain a copy of the License at
-
-	    www.apache.org/licenses/LICENSE-2.0
-
-	Unless required by applicable law or agreed to in writing, software
-	distributed under the License is distributed on an "AS IS" BASIS,
-	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	See the License for the specific language governing permissions and
-	limitations under the License.
-
-*/
+ * Copyright 2025 ChipFoundry, a DBA of Umbralogic Technologies LLC
+ * Copyright 2025 Efabless Corp.
+ *
+ * Author: Efabless Corp. (ip_admin@efabless.com)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at:
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 /* THIS FILE IS GENERATED, DO NOT EDIT */
 
@@ -26,7 +25,7 @@
 
 `include			"ahbl_wrapper.vh"
 
-module EF_SPI_AHBL #( 
+module CF_SPI_AHBL #( 
 	parameter	
 		CDW = 8,
 		FAW = 4
@@ -35,6 +34,7 @@ module EF_SPI_AHBL #(
 	inout VPWR,
 	inout VGND,
 `endif
+	input	wire	sc_testmode,
 	`AHBL_SLAVE_PORTS,
 	input	wire	[1-1:0]	miso,
 	output	wire	[1-1:0]	mosi,
@@ -62,7 +62,7 @@ module EF_SPI_AHBL #(
     reg [0:0] GCLK_REG;
     wire clk_g;
 
-    wire clk_gated_en = GCLK_REG[0];
+    wire clk_gated_en = sc_testmode ? 1'b1 : GCLK_REG[0];
     ef_util_gating_cell clk_gate_cell(
         `ifdef USE_POWER_PINS 
         .vpwr(VPWR),
@@ -198,7 +198,7 @@ module EF_SPI_AHBL #(
 
 	assign IRQ = |MIS_REG;
 
-	EF_SPI #(
+	CF_SPI #(
 		.CDW(CDW),
 		.FAW(FAW)
 	) instance_to_wrap (

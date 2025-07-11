@@ -1,8 +1,8 @@
 ---
 info:
-  name: EF_SPI
+  name: CF_SPI
   description: SPI master controller with receive and transmit FIFOs.
-  repo: github.com/efabless/EF_SPI
+  repo: github.com/chipfoundry/CF_SPI
   owner: Efabless Corp.
   license: APACHE 2.0
   author: Efabless Corp.

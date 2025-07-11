@@ -1,41 +1,41 @@
 /*
-	Copyright 2025 Efabless Corp.
-
-	Author: Efabless Corp. (ip_admin@efabless.com)
-
-	Licensed under the Apache License, Version 2.0 (the "License");
-	you may not use this file except in compliance with the License.
-	You may obtain a copy of the License at
-
-	    www.apache.org/licenses/LICENSE-2.0
-
-	Unless required by applicable law or agreed to in writing, software
-	distributed under the License is distributed on an "AS IS" BASIS,
-	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	See the License for the specific language governing permissions and
-	limitations under the License.
-
-*/
+ * Copyright 2025 ChipFoundry, a DBA of Umbralogic Technologies LLC
+ * Copyright 2025 Efabless Corp.
+ *
+ * Author: Efabless Corp. (ip_admin@efabless.com)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at:
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 /* THIS FILE IS GENERATED, DO NOT EDIT */
 
 `timescale 1ns / 1ps
 `default_nettype none
 
-module EF_SPI_APB #(
+module CF_SPI_WB #(
     parameter CDW = 8,
     FAW = 4
 ) (
 
-    input  wire         PCLK,
-    input  wire         PRESETn,
-    input  wire         PWRITE,
-    input  wire [ 31:0] PWDATA,
-    input  wire [ 31:0] PADDR,
-    input  wire         PENABLE,
-    input  wire         PSEL,
-    output wire         PREADY,
-    output wire [ 31:0] PRDATA,
+    input  wire         clk_i,
+    input  wire         rst_i,
+    input  wire [ 31:0] adr_i,
+    input  wire [ 31:0] dat_i,
+    output wire [ 31:0] dat_o,
+    input  wire [  3:0] sel_i,
+    input  wire         cyc_i,
+    input  wire         stb_i,
+    output reg          ack_o,
+    input  wire         we_i,
     output wire         IRQ,
     input  wire [1-1:0] miso,
     output wire [1-1:0] mosi,
@@ -67,17 +67,18 @@ module EF_SPI_APB #(
   ef_util_gating_cell clk_gate_cell (
 
       // USE_POWER_PINS
-      .clk(PCLK),
+      .clk(clk_i),
       .clk_en(clk_gated_en),
       .clk_o(clk_g)
   );
 
   wire           clk = clk_g;
-  wire           rst_n = PRESETn;
+  wire           rst_n = (~rst_i);
 
-  wire           apb_valid = PSEL & PENABLE;
-  wire           apb_we = PWRITE & apb_valid;
-  wire           apb_re = ~PWRITE & apb_valid;
+  wire           wb_valid = cyc_i & stb_i;
+  wire           wb_we = we_i & wb_valid;
+  wire           wb_re = ~we_i & wb_valid;
+  wire [    3:0] wb_byte_sel = sel_i & {4{wb_we}};
 
   wire [  1-1:0] CPOL;
   wire [  1-1:0] CPHA;
@@ -110,23 +111,23 @@ module EF_SPI_APB #(
   reg  [    1:0] CFG_REG;
   assign CPOL = CFG_REG[0 : 0];
   assign CPHA = CFG_REG[1 : 1];
-  always @(posedge PCLK or negedge PRESETn)
-    if (~PRESETn) CFG_REG <= 0;
-    else if (apb_we & (PADDR[16-1:0] == CFG_REG_OFFSET)) CFG_REG <= PWDATA[2-1:0];
+  always @(posedge clk_i or posedge rst_i)
+    if (rst_i) CFG_REG <= 0;
+    else if (wb_we & (adr_i[16-1:0] == CFG_REG_OFFSET)) CFG_REG <= dat_i[2-1:0];
 
   reg [2:0] CTRL_REG;
   assign ss = CTRL_REG[0 : 0];
   assign enable = CTRL_REG[1 : 1];
   assign rx_en = CTRL_REG[2 : 2];
-  always @(posedge PCLK or negedge PRESETn)
-    if (~PRESETn) CTRL_REG <= 0;
-    else if (apb_we & (PADDR[16-1:0] == CTRL_REG_OFFSET)) CTRL_REG <= PWDATA[3-1:0];
+  always @(posedge clk_i or posedge rst_i)
+    if (rst_i) CTRL_REG <= 0;
+    else if (wb_we & (adr_i[16-1:0] == CTRL_REG_OFFSET)) CTRL_REG <= dat_i[3-1:0];
 
   reg [CDW-1:0] PR_REG;
   assign clk_divider = PR_REG;
-  always @(posedge PCLK or negedge PRESETn)
-    if (~PRESETn) PR_REG <= 'h2;
-    else if (apb_we & (PADDR[16-1:0] == PR_REG_OFFSET)) PR_REG <= PWDATA[CDW-1:0];
+  always @(posedge clk_i or posedge rst_i)
+    if (rst_i) PR_REG <= 'h2;
+    else if (wb_we & (adr_i[16-1:0] == PR_REG_OFFSET)) PR_REG <= dat_i[CDW-1:0];
 
   wire [8-1:0] STATUS_WIRE;
   assign STATUS_WIRE[0 : 0] = tx_empty;
@@ -143,17 +144,16 @@ module EF_SPI_APB #(
 
   reg [FAW-1:0] RX_FIFO_THRESHOLD_REG;
   assign rx_threshold = RX_FIFO_THRESHOLD_REG[(FAW-1) : 0];
-  always @(posedge PCLK or negedge PRESETn)
-    if (~PRESETn) RX_FIFO_THRESHOLD_REG <= 0;
-    else if (apb_we & (PADDR[16-1:0] == RX_FIFO_THRESHOLD_REG_OFFSET))
-      RX_FIFO_THRESHOLD_REG <= PWDATA[FAW-1:0];
+  always @(posedge clk_i or posedge rst_i)
+    if (rst_i) RX_FIFO_THRESHOLD_REG <= 0;
+    else if (wb_we & (adr_i[16-1:0] == RX_FIFO_THRESHOLD_REG_OFFSET))
+      RX_FIFO_THRESHOLD_REG <= dat_i[FAW-1:0];
 
   reg [0:0] RX_FIFO_FLUSH_REG;
   assign rx_flush = RX_FIFO_FLUSH_REG[0 : 0];
-  always @(posedge PCLK or negedge PRESETn)
-    if (~PRESETn) RX_FIFO_FLUSH_REG <= 0;
-    else if (apb_we & (PADDR[16-1:0] == RX_FIFO_FLUSH_REG_OFFSET))
-      RX_FIFO_FLUSH_REG <= PWDATA[1-1:0];
+  always @(posedge clk_i or posedge rst_i)
+    if (rst_i) RX_FIFO_FLUSH_REG <= 0;
+    else if (wb_we & (adr_i[16-1:0] == RX_FIFO_FLUSH_REG_OFFSET)) RX_FIFO_FLUSH_REG <= dat_i[1-1:0];
     else RX_FIFO_FLUSH_REG <= 1'h0 & RX_FIFO_FLUSH_REG;
 
   wire [FAW-1:0] TX_FIFO_LEVEL_WIRE;
@@ -161,35 +161,34 @@ module EF_SPI_APB #(
 
   reg [FAW-1:0] TX_FIFO_THRESHOLD_REG;
   assign tx_threshold = TX_FIFO_THRESHOLD_REG[(FAW-1) : 0];
-  always @(posedge PCLK or negedge PRESETn)
-    if (~PRESETn) TX_FIFO_THRESHOLD_REG <= 0;
-    else if (apb_we & (PADDR[16-1:0] == TX_FIFO_THRESHOLD_REG_OFFSET))
-      TX_FIFO_THRESHOLD_REG <= PWDATA[FAW-1:0];
+  always @(posedge clk_i or posedge rst_i)
+    if (rst_i) TX_FIFO_THRESHOLD_REG <= 0;
+    else if (wb_we & (adr_i[16-1:0] == TX_FIFO_THRESHOLD_REG_OFFSET))
+      TX_FIFO_THRESHOLD_REG <= dat_i[FAW-1:0];
 
   reg [0:0] TX_FIFO_FLUSH_REG;
   assign tx_flush = TX_FIFO_FLUSH_REG[0 : 0];
-  always @(posedge PCLK or negedge PRESETn)
-    if (~PRESETn) TX_FIFO_FLUSH_REG <= 0;
-    else if (apb_we & (PADDR[16-1:0] == TX_FIFO_FLUSH_REG_OFFSET))
-      TX_FIFO_FLUSH_REG <= PWDATA[1-1:0];
+  always @(posedge clk_i or posedge rst_i)
+    if (rst_i) TX_FIFO_FLUSH_REG <= 0;
+    else if (wb_we & (adr_i[16-1:0] == TX_FIFO_FLUSH_REG_OFFSET)) TX_FIFO_FLUSH_REG <= dat_i[1-1:0];
     else TX_FIFO_FLUSH_REG <= 1'h0 & TX_FIFO_FLUSH_REG;
 
   localparam GCLK_REG_OFFSET = 16'hFF10;
-  always @(posedge PCLK or negedge PRESETn)
-    if (~PRESETn) GCLK_REG <= 0;
-    else if (apb_we & (PADDR[16-1:0] == GCLK_REG_OFFSET)) GCLK_REG <= PWDATA[1-1:0];
+  always @(posedge clk_i or posedge rst_i)
+    if (rst_i) GCLK_REG <= 0;
+    else if (wb_we & (adr_i[16-1:0] == GCLK_REG_OFFSET)) GCLK_REG <= dat_i[1-1:0];
 
   reg  [  5:0] IM_REG;
   reg  [  5:0] IC_REG;
   reg  [  5:0] RIS_REG;
 
   wire [6-1:0] MIS_REG = RIS_REG & IM_REG;
-  always @(posedge PCLK or negedge PRESETn)
-    if (~PRESETn) IM_REG <= 0;
-    else if (apb_we & (PADDR[16-1:0] == IM_REG_OFFSET)) IM_REG <= PWDATA[6-1:0];
-  always @(posedge PCLK or negedge PRESETn)
-    if (~PRESETn) IC_REG <= 6'b0;
-    else if (apb_we & (PADDR[16-1:0] == IC_REG_OFFSET)) IC_REG <= PWDATA[6-1:0];
+  always @(posedge clk_i or posedge rst_i)
+    if (rst_i) IM_REG <= 0;
+    else if (wb_we & (adr_i[16-1:0] == IM_REG_OFFSET)) IM_REG <= dat_i[6-1:0];
+  always @(posedge clk_i or posedge rst_i)
+    if (rst_i) IC_REG <= 6'b0;
+    else if (wb_we & (adr_i[16-1:0] == IC_REG_OFFSET)) IC_REG <= dat_i[6-1:0];
     else IC_REG <= 6'd0;
 
   wire [0:0] TXE = tx_empty;
@@ -200,8 +199,8 @@ module EF_SPI_APB #(
   wire [0:0] RXA = rx_level_above;
 
   integer _i_;
-  always @(posedge PCLK or negedge PRESETn)
-    if (~PRESETn) RIS_REG <= 0;
+  always @(posedge clk_i or posedge rst_i)
+    if (rst_i) RIS_REG <= 0;
     else begin
       for (_i_ = 0; _i_ < 1; _i_ = _i_ + 1) begin
         if (IC_REG[_i_]) RIS_REG[_i_] <= 1'b0;
@@ -231,7 +230,7 @@ module EF_SPI_APB #(
 
   assign IRQ = |MIS_REG;
 
-  EF_SPI #(
+  CF_SPI #(
       .CDW(CDW),
       .FAW(FAW)
   ) instance_to_wrap (
@@ -267,28 +266,30 @@ module EF_SPI_APB #(
       .sclk(sclk)
   );
 
-  assign	PRDATA = 
-			(PADDR[16-1:0] == RXDATA_REG_OFFSET)	? RXDATA_WIRE :
-			(PADDR[16-1:0] == CFG_REG_OFFSET)	? CFG_REG :
-			(PADDR[16-1:0] == CTRL_REG_OFFSET)	? CTRL_REG :
-			(PADDR[16-1:0] == PR_REG_OFFSET)	? PR_REG :
-			(PADDR[16-1:0] == STATUS_REG_OFFSET)	? STATUS_WIRE :
-			(PADDR[16-1:0] == RX_FIFO_LEVEL_REG_OFFSET)	? RX_FIFO_LEVEL_WIRE :
-			(PADDR[16-1:0] == RX_FIFO_THRESHOLD_REG_OFFSET)	? RX_FIFO_THRESHOLD_REG :
-			(PADDR[16-1:0] == RX_FIFO_FLUSH_REG_OFFSET)	? RX_FIFO_FLUSH_REG :
-			(PADDR[16-1:0] == TX_FIFO_LEVEL_REG_OFFSET)	? TX_FIFO_LEVEL_WIRE :
-			(PADDR[16-1:0] == TX_FIFO_THRESHOLD_REG_OFFSET)	? TX_FIFO_THRESHOLD_REG :
-			(PADDR[16-1:0] == TX_FIFO_FLUSH_REG_OFFSET)	? TX_FIFO_FLUSH_REG :
-			(PADDR[16-1:0] == IM_REG_OFFSET)	? IM_REG :
-			(PADDR[16-1:0] == MIS_REG_OFFSET)	? MIS_REG :
-			(PADDR[16-1:0] == RIS_REG_OFFSET)	? RIS_REG :
-			(PADDR[16-1:0] == GCLK_REG_OFFSET)	? GCLK_REG :
+  assign	dat_o = 
+			(adr_i[16-1:0] == RXDATA_REG_OFFSET)	? RXDATA_WIRE :
+			(adr_i[16-1:0] == CFG_REG_OFFSET)	? CFG_REG :
+			(adr_i[16-1:0] == CTRL_REG_OFFSET)	? CTRL_REG :
+			(adr_i[16-1:0] == PR_REG_OFFSET)	? PR_REG :
+			(adr_i[16-1:0] == STATUS_REG_OFFSET)	? STATUS_WIRE :
+			(adr_i[16-1:0] == RX_FIFO_LEVEL_REG_OFFSET)	? RX_FIFO_LEVEL_WIRE :
+			(adr_i[16-1:0] == RX_FIFO_THRESHOLD_REG_OFFSET)	? RX_FIFO_THRESHOLD_REG :
+			(adr_i[16-1:0] == RX_FIFO_FLUSH_REG_OFFSET)	? RX_FIFO_FLUSH_REG :
+			(adr_i[16-1:0] == TX_FIFO_LEVEL_REG_OFFSET)	? TX_FIFO_LEVEL_WIRE :
+			(adr_i[16-1:0] == TX_FIFO_THRESHOLD_REG_OFFSET)	? TX_FIFO_THRESHOLD_REG :
+			(adr_i[16-1:0] == TX_FIFO_FLUSH_REG_OFFSET)	? TX_FIFO_FLUSH_REG :
+			(adr_i[16-1:0] == IM_REG_OFFSET)	? IM_REG :
+			(adr_i[16-1:0] == MIS_REG_OFFSET)	? MIS_REG :
+			(adr_i[16-1:0] == RIS_REG_OFFSET)	? RIS_REG :
+			(adr_i[16-1:0] == IC_REG_OFFSET)	? IC_REG :
 			32'hDEADBEEF;
 
-  assign PREADY = 1'b1;
-
+  always @(posedge clk_i or posedge rst_i)
+    if (rst_i) ack_o <= 1'b0;
+    else if (wb_valid & ~ack_o) ack_o <= 1'b1;
+    else ack_o <= 1'b0;
   assign RXDATA_WIRE = datao;
-  assign rd = (apb_re & (PADDR[16-1:0] == RXDATA_REG_OFFSET));
-  assign datai = PWDATA;
-  assign wr = (apb_we & (PADDR[16-1:0] == TXDATA_REG_OFFSET));
+  assign rd = ack_o & (wb_re & (adr_i[16-1:0] == RXDATA_REG_OFFSET));
+  assign datai = dat_i;
+  assign wr = ack_o & (wb_we & (adr_i[16-1:0] == TXDATA_REG_OFFSET));
 endmodule

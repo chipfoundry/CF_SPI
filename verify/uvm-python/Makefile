@@ -1,33 +1,33 @@
 PLUSARGS += "+UVM_VERBOSITY=UVM_MEDUIM"
 TOPLEVEL := top
 MODULE   ?= top_module
-AHB_FILES ?= $(PWD)/../../hdl/rtl/bus_wrappers/EF_SPI_AHBL.v
-APB_FILES ?= $(PWD)/../../hdl/rtl/bus_wrappers/EF_SPI_APB.v
-WB_FILES ?=$(PWD)/../../hdl/rtl/bus_wrappers/EF_SPI_WB.v
-HDL_FILES ?= $(PWD)/../../ip/EF_IP_UTIL/hdl/ef_util_lib.v  $(PWD)/../../hdl/rtl/spi_master.v $(PWD)/../../hdl/rtl/EF_SPI.v 
+AHB_FILES ?= $(PWD)/../../hdl/rtl/bus_wrappers/CF_SPI_AHBL.v
+APB_FILES ?= $(PWD)/../../hdl/rtl/bus_wrappers/CF_SPI_APB.v
+WB_FILES ?=$(PWD)/../../hdl/rtl/bus_wrappers/CF_SPI_WB.v
+HDL_FILES ?= $(PWD)/../../ip/EF_IP_UTIL/hdl/ef_util_lib.v  $(PWD)/../../hdl/rtl/spi_master.v $(PWD)/../../hdl/rtl/CF_SPI.v 
 
 VERILOG_SOURCES ?=  $(PWD)/top.v $(AHB_FILES) $(APB_FILES) $(WB_FILES) $(HDL_FILES)
 RTL_MACROS += ""
 BUS_TYPE ?= APB
 ifeq ($(BUS_TYPE),APB)
     RTL_MACROS += -DBUS_TYPE_APB
-    DESIGN_NAME = EF_SPI_APB
+    DESIGN_NAME = CF_SPI_APB
     export CLK_MAKEFILE = PCLK
     export RST_MAKEFILE = PRESETn
 else ifeq ($(BUS_TYPE),AHB)
     RTL_MACROS += -DBUS_TYPE_AHB
-    DESIGN_NAME = EF_SPI_AHBL
+    DESIGN_NAME = CF_SPI_AHBL
     export CLK_MAKEFILE = HCLK
     export RST_MAKEFILE = HRESETn
 else ifeq ($(BUS_TYPE),WISHBONE)
     RTL_MACROS += -DBUS_TYPE_WISHBONE
-    DESIGN_NAME = EF_SPI_WB
+    DESIGN_NAME = CF_SPI_WB
     export CLK_MAKEFILE = clk_i
     export RST_MAKEFILE = rst_i
 endif
 
 # RTL_MACROS ?= "-DSKIP_WAVE_DUMP"
-YAML_FILE = $(PWD)/../../EF_SPI.yaml # TODO: update yaml file path
+YAML_FILE = $(PWD)/../../CF_SPI.yaml # TODO: update yaml file path
 MAKEFLAGS += --no-print-directory 
 
 # List of tests

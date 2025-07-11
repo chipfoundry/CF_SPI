@@ -1,4 +1,4 @@
-# EF_SPI
+# CF_SPI
 
 SPI master controller with receive and transmit FIFOs.
 ## The wrapped IP
@@ -10,7 +10,7 @@ SPI master controller with receive and transmit FIFOs.
 
 Based on your use case, use one of the provided wrappers or create a wrapper for your system bus type. For an example of how to integrate the wishbone wrapper:
 ```verilog
-EF_SPI_WB INST (
+CF_SPI_WB INST (
 	.clk_i(clk_i),
 	.rst_i(rst_i),
 	.adr_i(adr_i),
@@ -42,13 +42,13 @@ This IP generates interrupts on specific events, which are described in the [Int
 
 ## Implementation example  
 
-The following table is the result for implementing the EF_SPI IP with different wrappers using Sky130 HD library and [OpenLane2](https://github.com/efabless/openlane2) flow.
+The following table is the result for implementing the CF_SPI IP with different wrappers using Sky130 HD library and [OpenLane2](https://github.com/efabless/openlane2) flow.
 |Module | Number of cells | Max. freq |
 |---|---|---|
-|EF_SPI|TBD| TBD |
-|EF_SPI_APB|TBD|TBD|
-|EF_SPI_AHBL|TBD|TBD|
-|EF_SPI_WB|TBD|TBD|
+|CF_SPI|TBD| TBD |
+|CF_SPI_APB|TBD|TBD|
+|CF_SPI_AHBL|TBD|TBD|
+|CF_SPI_WB|TBD|TBD|
 ## The Programmer's Interface
 
 
@@ -223,25 +223,25 @@ VERILOG_DEFINES:
 - CLKG_SKY130_HD
 ```
 ## Firmware Drivers:
-Firmware drivers for EF_SPI can be found in the [Drivers](https://github.com/efabless/EFIS/tree/main/Drivers) directory in the [EFIS](https://github.com/efabless/EFIS) (Efabless Firmware Interface Standard) repo. EF_SPI driver documentation  is available [here](https://github.com/efabless/EFIS/blob/main/Drivers/Docs/EF_SPI/README.md).
-You can also find an example C application using the EF_SPI drivers [here](https://github.com/efabless/EFIS/tree/main/Drivers/Docs/EF_SPI/example).
+Firmware drivers for CF_SPI can be found in the [Drivers](https://github.com/efabless/EFIS/tree/main/Drivers) directory in the [EFIS](https://github.com/efabless/EFIS) (Efabless Firmware Interface Standard) repo. CF_SPI driver documentation  is available [here](https://github.com/efabless/EFIS/blob/main/Drivers/Docs/CF_SPI/README.md).
+You can also find an example C application using the CF_SPI drivers [here](https://github.com/efabless/EFIS/tree/main/Drivers/Docs/CF_SPI/example).
 ## Installation:
 You can install the IP either by cloning this repository or by using [IPM](https://github.com/efabless/IPM).
 ### 1. Using [IPM](https://github.com/efabless/IPM):
 - [Optional] If you do not have IPM installed, follow the installation guide [here](https://github.com/efabless/IPM/blob/main/README.md)
-- After installing IPM, execute the following command ```ipm install EF_SPI```.
+- After installing IPM, execute the following command ```ipm install CF_SPI```.
 > **Note:** This method is recommended as it automatically installs [EF_IP_UTIL](https://github.com/efabless/EF_IP_UTIL.git) as a dependency.
 ### 2. Cloning this repo: 
 - Clone [EF_IP_UTIL](https://github.com/efabless/EF_IP_UTIL.git) repository, which includes the required modules from the common modules library, [ef_util_lib.v](https://github.com/efabless/EF_IP_UTIL/blob/main/hdl/ef_util_lib.v).
 ```git clone https://github.com/efabless/EF_IP_UTIL.git```
 - Clone the IP repository
-```git clone github.com/efabless/EF_SPI```
+```git clone github.com/chipfoundry/CF_SPI```
 
 ### The Wrapped IP Interface 
 
 >**_NOTE:_** This section is intended for advanced users who wish to gain more information about the interface of the wrapped IP, in case they want to create their own wrappers.
 
-<img src="docs/_static/EF_SPI.svg" width="600"/>
+<img src="docs/_static/CF_SPI.svg" width="600"/>
 
 #### Module Parameters 
 
