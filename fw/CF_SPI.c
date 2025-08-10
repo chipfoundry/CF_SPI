@@ -126,4 +126,18 @@ void CF_SPI_setInterruptMask(uint32_t spi_base, int mask){
     spi->IM = mask;
 }
 
+void CF_SPI_setPrescaler(uint32_t spi_base, uint32_t pr_value){
+    CF_SPI_TYPE* spi = (CF_SPI_TYPE*)spi_base;
+    spi->PR = pr_value;
+}
+
+int CF_SPI_isBusy(uint32_t spi_base){
+    CF_SPI_TYPE* spi = (CF_SPI_TYPE*)spi_base;
+    return (spi->STATUS & CF_SPI_STATUS_REG_BUSY_MASK) != 0;
+}
+
+void CF_SPI_waitNotBusy(uint32_t spi_base){
+    while(CF_SPI_isBusy(spi_base)){}
+}
+
 #endif

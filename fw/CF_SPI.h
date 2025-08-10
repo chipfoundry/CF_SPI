@@ -22,4 +22,9 @@ void CF_SPI_assertCs(uint32_t spi_base);
 void CF_SPI_deassertCs(uint32_t spi_base);
 void CF_SPI_setInterruptMask(uint32_t spi_base, int mask);
 
+// Additional helpers
+void CF_SPI_setPrescaler(uint32_t spi_base, uint32_t pr_value);
+int  CF_SPI_isBusy(uint32_t spi_base);
+void CF_SPI_waitNotBusy(uint32_t spi_base);
+
 #endif
