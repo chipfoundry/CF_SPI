@@ -2,7 +2,7 @@ from uvm.seq import UVMSequence
 from uvm.macros.uvm_object_defines import uvm_object_utils
 from uvm.macros.uvm_message_defines import uvm_fatal
 from uvm.base.uvm_config_db import UVMConfigDb
-from EF_UVM.bus_env.bus_seq_lib.bus_seq_base import bus_seq_base
+from CF_UVM.bus_env.bus_seq_lib.bus_seq_base import bus_seq_base
 from cocotb.triggers import Timer
 from uvm.macros.uvm_sequence_defines import uvm_do_with, uvm_do
 import random

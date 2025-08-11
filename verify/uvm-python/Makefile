@@ -4,7 +4,7 @@ MODULE   ?= top_module
 AHB_FILES ?= $(PWD)/../../hdl/rtl/bus_wrappers/CF_SPI_AHBL.v
 APB_FILES ?= $(PWD)/../../hdl/rtl/bus_wrappers/CF_SPI_APB.v
 WB_FILES ?=$(PWD)/../../hdl/rtl/bus_wrappers/CF_SPI_WB.v
-HDL_FILES ?= $(PWD)/../../ip/EF_IP_UTIL/hdl/ef_util_lib.v  $(PWD)/../../hdl/rtl/spi_master.v $(PWD)/../../hdl/rtl/CF_SPI.v 
+HDL_FILES ?= $(PWD)/../../ip/CF_IP_UTIL/hdl/ef_util_lib.v  $(PWD)/../../hdl/rtl/spi_master.v $(PWD)/../../hdl/rtl/CF_SPI.v 
 
 VERILOG_SOURCES ?=  $(PWD)/top.v $(AHB_FILES) $(APB_FILES) $(WB_FILES) $(HDL_FILES)
 RTL_MACROS += ""
@@ -40,7 +40,7 @@ SIM_TAG ?= default_tag
 # Define SIM_PATH variable
 SIM_PATH := $(PWD)/sim/$(SIM_TAG)
 
-# Check and clone EF_UVM repository at the beginning of the Makefile execution
+# Check and clone CF_UVM repository at the beginning of the Makefile execution
 ## netlist Gen 
 GL_MACROS += -DGL -DFUNCTIONAL  $(RTL_MACROS) -DUNIT_DELAY=\#1 
 PRE_SYS_FILES = $(AHB_FILES) $(APB_FILES) $(WB_FILES) $(HDL_FILES)
@@ -49,10 +49,10 @@ PDK_FILES = $(PDK_DIR)/libs.ref/sky130_fd_sc_hd/verilog/primitives.v $(PDK_DIR)/
 POST_SYS_FILES = $(PWD)/top.v $(VIP_FILES) $(PWD)/../../hdl/gl/synthesis/nl/$(DESIGN_NAME).nl.v
 
 
-clone_ef_uvm := $(shell if [ ! -d "EF_UVM" ]; then \
-	echo "Cloning the EF_UVM repository..."; \
-	git clone https://github.com/efabless/EF_UVM.git; \
+clone_ef_uvm := $(shell if [ ! -d "CF_UVM" ]; then \
+	echo "Cloning the CF_UVM repository..."; \
+	git clone https://github.com/efabless/CF_UVM.git; \
 fi;)
 
 
-include EF_UVM/Makefile.test
+include CF_UVM/Makefile.test

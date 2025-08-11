@@ -9,7 +9,7 @@ from uvm.macros import (
 )
 from uvm.base.uvm_object_globals import UVM_ALL_ON, UVM_NOPACK, UVM_HIGH, UVM_MEDIUM
 from uvm.base.sv import sv
-from EF_UVM.ip_env.ip_item import ip_item
+from CF_UVM.ip_env.ip_item import ip_item
 
 
 class spi_item(ip_item):

@@ -87,13 +87,13 @@ module CF_SPI #(parameter
 
     assign      csb = ~ss;
     
-    ef_util_ped done_ed (
+    cf_util_ped done_ed (
         .clk(clk),
         .in(done),
         .out(done_pe)
     );
 
-    ef_util_fifo #(
+    cf_util_fifo #(
         .DW(FDW), 
         .AW(FAW)
     ) rx_fifo (
@@ -109,7 +109,7 @@ module CF_SPI #(parameter
         .level(rx_level)    
     );
 
-    ef_util_fifo #(
+    cf_util_fifo #(
         .DW(FDW), 
         .AW(FAW)
     ) tx_fifo (

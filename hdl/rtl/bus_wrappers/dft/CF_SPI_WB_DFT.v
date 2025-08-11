@@ -65,7 +65,7 @@ module CF_SPI_WB #(
   wire clk_g;
 
   wire clk_gated_en = sc_testmode ? 1'b1 : GCLK_REG[0];
-  ef_util_gating_cell clk_gate_cell (
+  cf_util_gating_cell clk_gate_cell (
 
       // USE_POWER_PINS
       .clk(clk_i),

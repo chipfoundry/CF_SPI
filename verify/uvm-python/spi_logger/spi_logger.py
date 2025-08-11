@@ -1,4 +1,4 @@
-from EF_UVM.ip_env.ip_logger.ip_logger import ip_logger
+from CF_UVM.ip_env.ip_logger.ip_logger import ip_logger
 import cocotb
 from uvm.macros import uvm_component_utils, uvm_fatal
 
