@@ -4,7 +4,7 @@ from uvm.base.uvm_config_db import UVMConfigDb
 from uvm.base.uvm_object_globals import UVM_LOW
 from uvm.base.uvm_globals import run_test
 from spi_interface.spi_if import spi_if
-from EF_UVM.bus_env.bus_interface.bus_if import (
+from CF_UVM.bus_env.bus_interface.bus_if import (
     bus_apb_if,
     bus_irq_if,
     bus_ahb_if,
@@ -12,9 +12,9 @@ from EF_UVM.bus_env.bus_interface.bus_if import (
 )
 from cocotb_coverage.coverage import coverage_db
 from cocotb.triggers import Event, First
-from EF_UVM.bus_env.bus_regs import bus_regs
+from CF_UVM.bus_env.bus_regs import bus_regs
 from uvm.base import UVMRoot
-from EF_UVM.base_test import base_test
+from CF_UVM.base_test import base_test
 
 # seqences import
 from spi_seq_lib.spi_bus_seq import spi_bus_seq
@@ -27,15 +27,15 @@ from spi_seq_lib.spi_pr_seq import spi_pr_seq
 from spi_seq_lib.configure_spi_seq import configure_spi_seq
 
 # override classes
-from EF_UVM.ip_env.ip_agent.ip_driver import ip_driver
+from CF_UVM.ip_env.ip_agent.ip_driver import ip_driver
 from spi_agent.spi_driver import spi_driver
-from EF_UVM.ip_env.ip_agent.ip_monitor import ip_monitor
+from CF_UVM.ip_env.ip_agent.ip_monitor import ip_monitor
 from spi_agent.spi_monitor import spi_monitor
-from EF_UVM.ref_model.ref_model import ref_model
+from CF_UVM.ref_model.ref_model import ref_model
 from spi_ref_model.spi_ref_model import spi_ref_model
-from EF_UVM.ip_env.ip_coverage.ip_coverage import ip_coverage
+from CF_UVM.ip_env.ip_coverage.ip_coverage import ip_coverage
 from spi_coverage.spi_coverage import spi_coverage
-from EF_UVM.ip_env.ip_logger.ip_logger import ip_logger
+from CF_UVM.ip_env.ip_logger.ip_logger import ip_logger
 from spi_logger.spi_logger import spi_logger
 
 

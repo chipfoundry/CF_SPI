@@ -6,8 +6,8 @@ from uvm.macros import uvm_component_utils, uvm_info, uvm_error, uvm_warning
 from uvm.base.uvm_config_db import UVMConfigDb
 from uvm.tlm1.uvm_analysis_port import UVMAnalysisExport
 import cocotb
-from EF_UVM.ref_model.ref_model import ref_model
-from EF_UVM.bus_env.bus_item import bus_item
+from CF_UVM.ref_model.ref_model import ref_model
+from CF_UVM.bus_env.bus_item import bus_item
 from cocotb.triggers import Event
 from cocotb.queue import Queue, QueueFull, QueueEmpty
 

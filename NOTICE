@@ -1,7 +1,7 @@
 CF_SPI
 Copyright 2024-2025 ChipFoundry, a DBA of Umbralogic Technologies LLC.
 
-This project is based on the original EF_SPI project:
+This project is based on the original CF_SPI project:
 Copyright 2024-2025 Efabless Corp.
 Author: Efabless Corp. (ip_admin@efabless.com)
 
@@ -17,9 +17,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-This project includes modifications and improvements to the original EF_SPI
+This project includes modifications and improvements to the original CF_SPI
 design, including but not limited to:
-- Renamed modules and files from EF_SPI to CF_SPI
+- Renamed modules and files from CF_SPI to CF_SPI
 - Updated documentation and configuration files
 - Modified copyright notices and attribution
 - Updated repository references and URLs
@@ -27,5 +27,5 @@ design, including but not limited to:
 - Improved UVM testbench with comprehensive verification coverage
 - Added DFT (Design for Test) support in bus wrappers
 
-The original EF_SPI project can be found at:
-https://github.com/efabless/EF_SPI 
+The original CF_SPI project can be found at:
+https://github.com/efabless/CF_SPI 
