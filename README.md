@@ -1,5 +1,11 @@
 # CF_SPI
 
+[![Verification](https://github.com/chipfoundry/CF_SPI/actions/workflows/verify.yaml/badge.svg)](https://github.com/chipfoundry/CF_SPI/actions/workflows/verify.yaml)
+![Tests](https://img.shields.io/endpoint?url=https://chipfoundry.github.io/CF_SPI/badges/verification.json)
+![Functional Coverage](https://img.shields.io/endpoint?url=https://chipfoundry.github.io/CF_SPI/badges/func-coverage.json)
+![Line Coverage](https://img.shields.io/endpoint?url=https://chipfoundry.github.io/CF_SPI/badges/line-coverage.json)
+![Branch Coverage](https://img.shields.io/endpoint?url=https://chipfoundry.github.io/CF_SPI/badges/branch-coverage.json)
+
 SPI master controller with receive and transmit FIFOs.
 ## The wrapped IP
 

@@ -59,3 +59,14 @@ tmp.*
 DS_Store
 IP_Utilities
 syn
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Verification sim artifacts
+verify/pyuvm/sim/
+
+# macOS
+.DS_Store
