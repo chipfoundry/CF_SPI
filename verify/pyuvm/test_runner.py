@@ -45,6 +45,7 @@ TESTS = [
     "InterruptTest",
     "FIFOTest",
     "ConfigTest",
+    "CoverageClosureTest",
 ]
 
 

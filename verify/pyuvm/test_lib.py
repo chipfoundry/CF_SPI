@@ -215,3 +215,15 @@ class ConfigTest(spi_base_test):
                 )
 
         self.drop_objection()
+
+
+@pyuvm.test()
+class CoverageClosureTest(spi_base_test):
+    """Coverage closure — systematically exercises all coverage bins."""
+
+    async def run_phase(self):
+        self.raise_objection()
+        from seq_lib.spi_coverage_closure_seq import spi_coverage_closure_seq
+        seq = spi_coverage_closure_seq("cov_closure")
+        await seq.start(self.env.bus_agent.sequencer)
+        self.drop_objection()
