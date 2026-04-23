@@ -1,5 +1,7 @@
 """SPI interrupt sequence — exercises all interrupt sources and verifies IM/IC."""
 
+import os
+
 from pyuvm import uvm_sequence, ConfigDB
 from cocotb.triggers import ClockCycles
 
@@ -42,10 +44,13 @@ class spi_interrupt_seq(uvm_sequence):
         for i in range(17):
             await write_reg_seq("tx_fill", addr["TXDATA"], i & 0xFF).start(self.sequencer)
 
-        for _ in range(20_000):
+        if os.environ.get("SIM", "").lower() == "verilator":
+            await ClockCycles(dut.CLK, max(8, bit_cyc * 4))
+
+        for _ in range(500_000):
             await ClockCycles(dut.CLK, 1)
             ris = await read_reg("RIS")
-            if (ris >> txf_b) & 1:
+            if (int(ris) >> txf_b) & 1:
                 break
 
         await expect_bit("RIS", txf_b, 1, "TX full flag not asserted in RIS")
