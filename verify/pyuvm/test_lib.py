@@ -88,9 +88,34 @@ class WriteReadRegsTest(spi_base_test):
     """Write/read all accessible registers."""
 
     async def run_phase(self):
+        from cf_verify.bus_env.bus_seq_lib import write_reg_seq, read_reg_seq
+
         self.raise_objection()
+        # Keep broad auto-generated sequence for register access stimulation.
         seq = write_read_regs_seq("write_read_regs")
         await seq.start(self.env.bus_agent.sequencer)
+
+        # Add strict local assertions so mismatches never pass via log-only behavior.
+        regs = ConfigDB().get(None, "", "bus_regs")
+        addr = regs.reg_name_to_address
+        for reg in regs.get_writable_regs():
+            if reg.name in ("IC", "GCLK") or reg.name.endswith("_FLUSH"):
+                continue
+            wr_val = (
+                0xA5 if reg.size <= 8
+                else 0xA5A5 if reg.size <= 16
+                else 0xDEAD_BEEF
+            ) & ((1 << reg.size) - 1)
+            await write_reg_seq("wr_chk", addr[reg.name], wr_val).start(
+                self.env.bus_agent.sequencer
+            )
+            rd = read_reg_seq("rd_chk", addr[reg.name])
+            await rd.start(self.env.bus_agent.sequencer)
+            rd_val = rd.result & ((1 << reg.size) - 1)
+            assert rd_val == wr_val, (
+                f"WriteReadRegsTest mismatch on {reg.name}: "
+                f"wrote 0x{wr_val:x}, read 0x{rd_val:x}"
+            )
         self.drop_objection()
 
 

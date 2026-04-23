@@ -73,7 +73,10 @@ class spi_cov_groups:
         elif (self.rxdata_addr is not None
               and tr.addr == self.rxdata_addr
               and tr.kind == bus_item.READ):
-            self.sample(self._synth(tr.data, spi_item.RX))
+            # Avoid crediting RX semantic coverage on empty FIFO reads.
+            rx_lvl = self.regs.read_reg_value("RX_FIFO_LEVEL")
+            if rx_lvl > 0 or tr.data != 0:
+                self.sample(self._synth(tr.data, spi_item.RX))
 
     def _synth(self, data, direction):
         """Build a synthetic spi_item from bus data + current CFG state."""

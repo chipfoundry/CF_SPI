@@ -27,7 +27,12 @@ class spi_item(uvm_sequence_item):
         )
 
     def do_compare(self, rhs):
-        return self.data == rhs.data and self.direction == rhs.direction
+        return (
+            self.data == rhs.data
+            and self.direction == rhs.direction
+            and self.cpol == rhs.cpol
+            and self.cpha == rhs.cpha
+        )
 
     def do_copy(self, rhs):
         super().do_copy(rhs)

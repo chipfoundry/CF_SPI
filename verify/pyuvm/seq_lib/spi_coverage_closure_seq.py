@@ -3,12 +3,14 @@
 from pyuvm import uvm_sequence, ConfigDB
 from cocotb.triggers import ClockCycles
 
-from cf_verify.bus_env.bus_seq_lib import write_reg_seq, read_reg_seq
+from cf_verify.bus_env.bus_seq_lib import write_reg_seq, read_reg_seq, reset_seq
 from seq_lib.spi_config_seq import spi_config_seq
 
 
 class spi_coverage_closure_seq(uvm_sequence):
     async def body(self):
+        await reset_seq("rst").start(self.sequencer)
+
         regs = ConfigDB().get(None, "", "bus_regs")
         self.addr = regs.reg_name_to_address
         self.dut = ConfigDB().get(None, "", "DUT")
@@ -86,7 +88,7 @@ class spi_coverage_closure_seq(uvm_sequence):
         await self._w("pr", "PR", 2)
         await self._w("cfg", "CFG", 0)
 
-        for fill_count in [0, 3, 8, 14]:
+        for fill_count in [0, 3, 8, 16]:
             if "TX_FIFO_FLUSH" in self.addr:
                 await self._w("flush_tx", "TX_FIFO_FLUSH", 1)
             for i in range(fill_count):
@@ -108,13 +110,16 @@ class spi_coverage_closure_seq(uvm_sequence):
         ctrl = 1 | (1 << 1) | (1 << 2)  # SS + enable + rx_en
         bit_cyc = 3 * 16
 
-        for fill_count in [0, 3, 8, 14]:
+        # Bins: empty, low(1-4), mid(5-12), high(13-15). Need 13-15 in RX_LEVEL
+        # without relying on overflow; 16 TX beats can miss the high window.
+        for fill_count in [0, 3, 8, 14, 15]:
             if "RX_FIFO_FLUSH" in self.addr:
                 await self._w("flush_rx", "RX_FIFO_FLUSH", 1)
             await self._w("ctrl", "CTRL", ctrl)
             for i in range(fill_count):
                 await self._w("tx", "TXDATA", (i * 17) & 0xFF)
-            await ClockCycles(self.dut.CLK, bit_cyc * 12 * max(fill_count, 1))
+            wait_cyc = bit_cyc * 12 * max(fill_count * 2, 24)
+            await ClockCycles(self.dut.CLK, wait_cyc)
             if "RX_FIFO_LEVEL" in self.addr:
                 await self._r("rx_lvl", "RX_FIFO_LEVEL")
             await self._r("status", "STATUS")
@@ -136,10 +141,14 @@ class spi_coverage_closure_seq(uvm_sequence):
 
         await self._w("tx", "TXDATA", 0x42)
         bit_cyc = 3 * 16
-        # Poll STATUS until done flag (bit 7) is set
+        # Poll STATUS until done flag (bit 7) is set.
+        done_seen = False
         for _ in range(20):
             await ClockCycles(self.dut.CLK, bit_cyc * 2)
-            await self._r("status_done", "STATUS")
+            rd = read_reg_seq("status_done", self.addr["STATUS"])
+            await rd.start(self.sequencer)
+            done_seen |= ((rd.result >> 7) & 1) == 1
+        assert done_seen, "STATUS.done was never observed during completed transfer"
         await self._r("ris_done", "RIS")
         if "MIS" in self.addr:
             await self._r("mis_done", "MIS")

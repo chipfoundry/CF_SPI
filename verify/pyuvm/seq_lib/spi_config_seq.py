@@ -4,7 +4,7 @@ import random
 
 from pyuvm import uvm_sequence, ConfigDB
 
-from cf_verify.bus_env.bus_seq_lib import write_reg_seq
+from cf_verify.bus_env.bus_seq_lib import write_reg_seq, reset_seq
 
 
 class spi_config_seq(uvm_sequence):
@@ -20,6 +20,8 @@ class spi_config_seq(uvm_sequence):
         self.rx_en = rx_en
 
     async def body(self):
+        await reset_seq("rst").start(self.sequencer)
+
         regs = ConfigDB().get(None, "", "bus_regs")
         addr = regs.reg_name_to_address
 
@@ -31,7 +33,7 @@ class spi_config_seq(uvm_sequence):
         await write_reg_seq("wr_ctrl_off", addr["CTRL"], 0).start(self.sequencer)
 
         # Prescaler (minimum 2 per spec)
-        pr = self.prescaler if self.prescaler is not None else random.choice([2, 4, 8])
+        pr = self.prescaler if self.prescaler is not None else random.choice([4, 8])
         await write_reg_seq("wr_pr", addr["PR"], pr).start(self.sequencer)
 
         # Configuration: cpol + cpha

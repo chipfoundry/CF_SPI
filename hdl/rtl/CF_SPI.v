@@ -73,6 +73,7 @@ module CF_SPI #(parameter
     wire [7:0]  tx_rdata;
     
     // RX Side
+    wire        done_raw;
     wire        done_pe;
     wire        rx_wr       = rx_en & done_pe;
     wire        rx_rd       = rd;
@@ -87,9 +88,24 @@ module CF_SPI #(parameter
 
     assign      csb = ~ss;
     
+    // spi_master asserts `done` for only a short window (often a few clk cycles).
+    // Software polls STATUS.done; expose a sticky flag set on completion and
+    // cleared when a new byte is written to the TX FIFO.
+    reg done_sticky;
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n)
+            done_sticky <= 1'b0;
+        else if (done_pe)
+            done_sticky <= 1'b1;
+        else if (tx_wr)
+            done_sticky <= 1'b0;
+    end
+
+    assign done = done_sticky;
+
     cf_util_ped done_ed (
         .clk(clk),
-        .in(done),
+        .in(done_raw),
         .out(done_pe)
     );
 
@@ -141,7 +157,7 @@ module CF_SPI #(parameter
         .datai(tx_rdata),
         .datao(f_datao),
         .busy(busy),
-        .done(done),
+        .done(done_raw),
         .dout(miso),
         .din(mosi),
         // .csb(csb),

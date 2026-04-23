@@ -35,12 +35,12 @@ module top();
         wire        HRESETn = RESETn;
         wire [31:0] HADDR;
         wire        HWRITE;
-        wire        HSEL = 0;
+        reg         HSEL = 0;
         wire        HREADYOUT;
-        wire [1:0]  HTRANS = 0;
+        reg  [1:0]  HTRANS = 0;
         wire [31:0] HWDATA;
         wire [31:0] HRDATA;
-        wire        HREADY;
+        reg         HREADY = 1;
         CF_SPI_AHBL dut(
             .miso(MISO), .mosi(MOSI), .csb(SSn), .sclk(SCK),
             .HCLK(HCLK), .HRESETn(HRESETn),

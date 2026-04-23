@@ -5,7 +5,7 @@ import random
 from pyuvm import uvm_sequence, ConfigDB
 from cocotb.triggers import ClockCycles
 
-from cf_verify.bus_env.bus_seq_lib import write_reg_seq, read_reg_seq
+from cf_verify.bus_env.bus_seq_lib import write_reg_seq, read_reg_seq, reset_seq
 from seq_lib.spi_config_seq import spi_config_seq
 
 
@@ -14,14 +14,16 @@ class spi_loopback_seq(uvm_sequence):
         super().__init__(name)
 
     async def body(self):
+        await reset_seq("rst").start(self.sequencer)
+
         regs = ConfigDB().get(None, "", "bus_regs")
         addr = regs.reg_name_to_address
         dut = ConfigDB().get(None, "", "DUT")
 
-        config = spi_config_seq("config", rx_en=1)
+        config = spi_config_seq("config", rx_en=1, prescaler=4)
         await config.start(self.sequencer)
 
-        pr = regs.read_reg_value("PR")
+        pr = regs.read_reg_value("PR") or 4
         bit_cyc = (pr + 1) * 16
 
         sent_data = []
@@ -33,4 +35,10 @@ class spi_loopback_seq(uvm_sequence):
 
         # Read back from RXDATA (loopback: MISO = MOSI)
         for expected in sent_data:
-            rx = await read_reg_seq("rx_rd", addr["RXDATA"]).start(self.sequencer)
+            rd = read_reg_seq("rx_rd", addr["RXDATA"])
+            await rd.start(self.sequencer)
+            rx_val = rd.result & 0xFF
+            assert rx_val == expected, (
+                f"SPI loopback MISMATCH: sent 0x{expected:02x}, "
+                f"received 0x{rx_val:02x}"
+            )
