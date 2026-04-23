@@ -1,5 +1,6 @@
 """SPI loopback sequence — sends via TX, reads back from RXDATA via loopback."""
 
+import os
 import random
 
 from pyuvm import uvm_sequence, ConfigDB
@@ -34,8 +35,10 @@ class spi_loopback_seq(uvm_sequence):
             await write_reg_seq("tx_wr", addr["TXDATA"], data).start(self.sequencer)
             await ClockCycles(dut.CLK, bit_cyc * 12)
 
-        # Verilator may need more time or explicit RX level before RXDATA matches
-        if "RX_FIFO_LEVEL" in addr:
+        # Verilator: RX level can go non-zero before loopback data is byte-stable
+        if os.environ.get("SIM", "").lower() == "verilator":
+            await ClockCycles(dut.CLK, bit_cyc * 12 * n * 48)
+        elif "RX_FIFO_LEVEL" in addr:
             for _ in range(200_000):
                 await ClockCycles(dut.CLK, 2)
                 rdl = read_reg_seq("rxlvl_wait", addr["RX_FIFO_LEVEL"])
