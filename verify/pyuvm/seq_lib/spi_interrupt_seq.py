@@ -42,6 +42,12 @@ class spi_interrupt_seq(uvm_sequence):
         for i in range(17):
             await write_reg_seq("tx_fill", addr["TXDATA"], i & 0xFF).start(self.sequencer)
 
+        for _ in range(20_000):
+            await ClockCycles(dut.CLK, 1)
+            ris = await read_reg("RIS")
+            if (ris >> txf_b) & 1:
+                break
+
         await expect_bit("RIS", txf_b, 1, "TX full flag not asserted in RIS")
         await expect_bit("MIS", txf_b, 1, "TX full flag not asserted in MIS")
         # TXE is sticky in this implementation and may remain set while TXF asserts.

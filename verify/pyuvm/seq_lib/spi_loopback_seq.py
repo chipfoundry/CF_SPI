@@ -26,12 +26,24 @@ class spi_loopback_seq(uvm_sequence):
         pr = regs.read_reg_value("PR") or 4
         bit_cyc = (pr + 1) * 16
 
+        n = 4
         sent_data = []
-        for _ in range(4):
+        for _ in range(n):
             data = random.randint(0, 0xFF)
             sent_data.append(data)
             await write_reg_seq("tx_wr", addr["TXDATA"], data).start(self.sequencer)
             await ClockCycles(dut.CLK, bit_cyc * 12)
+
+        # Verilator may need more time or explicit RX level before RXDATA matches
+        if "RX_FIFO_LEVEL" in addr:
+            for _ in range(200_000):
+                await ClockCycles(dut.CLK, 2)
+                rdl = read_reg_seq("rxlvl_wait", addr["RX_FIFO_LEVEL"])
+                await rdl.start(self.sequencer)
+                if int(rdl.result) & 0xF >= n:
+                    break
+        else:
+            await ClockCycles(dut.CLK, bit_cyc * 12 * n)
 
         # Read back from RXDATA (loopback: MISO = MOSI)
         for expected in sent_data:
